@@ -59,10 +59,6 @@ const GameBoard = () => {
         });
 
         setCurrentPlayer(currentPlayer === PLAYER_1 ? PLAYER_2 : PLAYER_1);
-        
-
-        console.log(gameBoard);
-        console.log(currentPlayer);
     }
     
     const rederCircle = (id) => {
