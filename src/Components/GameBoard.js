@@ -1,16 +1,26 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import GameCircle from './GameCircle'
 import Header from './Header';
 import Footer from './Footer';
-
-const NUM_CIRCLES = 16;
-const NO_PLAYER = 0;
-const PLAYER_1 = 1;
-const PLAYER_2 = 2;
+import { isDraw, isWinner, getComputerMove } from '../Helpers/helper';
+import { GAME_STATE_DRAW, GAME_STATE_PLAYING, GAME_STATE_WINNER, NO_PLAYER, NUM_CIRCLES, PLAYER_1, PLAYER_2 } from '../Helpers/Constants';
 
 const GameBoard = () => {
     const [gameBoard, setGameBoard] = useState(Array(16).fill(NO_PLAYER));
     const [currentPlayer, setCurrentPlayer] = useState(PLAYER_1);
+    const [gameState, setGameState] = useState(GAME_STATE_PLAYING);
+    const [winnerPlayer, setWinnerPlayer] = useState(NO_PLAYER);
+
+    useEffect(() => {
+        initGame();
+    },[]);
+
+    const initGame = () => {
+        setGameBoard(Array(16).fill(NO_PLAYER));
+        setCurrentPlayer(PLAYER_1);
+        setGameState(GAME_STATE_PLAYING);
+        setWinnerPlayer(NO_PLAYER);
+    }
 
     const initGameBoard = () => {
         const circles = Array(null);
@@ -20,7 +30,25 @@ const GameBoard = () => {
         return circles;
     }
 
+    const suggestMove = () => {
+        console.log("suggestMove");
+        circleClicked(getComputerMove(gameBoard));
+    }
+
     const circleClicked = (id) => {
+
+        if(gameBoard[id] !== NO_PLAYER || gameState === GAME_STATE_WINNER) return;
+
+        if(isWinner(gameBoard,id,currentPlayer)) {
+            setGameState(GAME_STATE_WINNER);
+            setWinnerPlayer(currentPlayer);
+        }
+
+        if(isDraw(gameBoard,id,currentPlayer)) {
+            setGameState(GAME_STATE_DRAW);
+            setWinnerPlayer(NO_PLAYER);
+        }
+
         setGameBoard(prev => {
            return prev.map((circle, position) => {
                 if (position === id) {
@@ -43,11 +71,11 @@ const GameBoard = () => {
 
     return (
         <>
-        <Header player={currentPlayer}/>
+        <Header gameState={gameState} currentPlayer={currentPlayer} winPlayer={winnerPlayer}/>
         <div className='gameBoard'>
             {initGameBoard()}
         </div>
-        <Footer currentPlayer={currentPlayer}/>
+        <Footer onNewGameClick={initGame} onSuggestClick={suggestMove}/>
         </>
         
     )
