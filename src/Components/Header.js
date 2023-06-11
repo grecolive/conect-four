@@ -1,6 +1,6 @@
 import React from "react";
-
 import { GAME_STATE_DRAW, GAME_STATE_PLAYING, GAME_STATE_WINNER } from '../Helpers/Constants';
+
 const Header = ({gameState, currentPlayer, winPlayer}) => {  
     const renderLabel = () => {
         switch (gameState) {
